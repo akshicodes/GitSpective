@@ -1,16 +1,13 @@
+from collections import Counter
+
 def calculate_repository_growth(repositories):
 
-    growth = {}
-
+    yearly_growth = Counter()
     for repo in repositories:
 
-        year = repo["created_at"][:4]
-
-        if year in growth:
-            growth[year] += 1
-        else:
-            growth[year] = 1
-
-    growth = dict(sorted(growth.items()))
-
-    return growth
+        created_at = repo.get("created_at")
+        if not created_at:
+            continue
+        year = created_at[:4]
+        yearly_growth[year] += 1
+    return dict(sorted(yearly_growth.items()))

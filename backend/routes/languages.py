@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from ..services.github_service import get_repositories
 from ..analytics.language_analysis import analyze_languages
@@ -12,11 +12,10 @@ def languages(username: str):
     repositories = get_repositories(username)
 
     if repositories is None:
-        return {
-            "status": "error",
-            "message": "Repositories not found.",
-            "data": {}
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="GitHub user not found."
+        )
 
     language_data = analyze_languages(repositories)
 

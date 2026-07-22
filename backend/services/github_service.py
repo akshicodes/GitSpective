@@ -7,7 +7,10 @@ def get_profile(username): # fetch profile details from GitHub.
 
     url = f"{BASE_URL}/users/{username}"
 
-    response = requests.get(url)
+    try:
+        response = requests.get(url, timeout=10)
+    except requests.RequestException:
+        return None
 
     if response.status_code != 200:
         return None
@@ -15,63 +18,69 @@ def get_profile(username): # fetch profile details from GitHub.
     data = response.json()
 
     return {
-        "name": data["name"],
-        "username": data["login"],
-        "avatar": data["avatar_url"],
-        "bio": data["bio"],
-        "followers": data["followers"],
-        "following": data["following"],
-        "public_repos": data["public_repos"],
-        "company": data["company"],
-        "location": data["location"],
-        "blog": data["blog"],
-        "joined": data["created_at"]
+        "name": data.get("name"),
+        "username": data.get("login"),
+        "avatar": data.get("avatar_url"),
+        "bio": data.get("bio"),
+        "followers": data.get("followers"),
+        "following": data.get("following"),
+        "public_repos": data.get("public_repos"),
+        "company": data.get("company"),
+        "location": data.get("location"),
+        "blog": data.get("blog"),
+        "joined": data.get("created_at")
     }
 
 
-def get_repositories(username): #Fetch all public repositories of a GitHub user.
+def get_repositories(username):
+    """Fetch all public repositories of a GitHub user."""
 
     url = f"{BASE_URL}/users/{username}/repos"
 
-    response = requests.get(url)
+    try:
+        response = requests.get(url, timeout=10)
+    except requests.RequestException:
+        return None
 
     if response.status_code != 200:
         return None
 
     repositories = response.json()
-
     repo_list = []
 
     for repo in repositories:
-      repo_list.append({
-    "name": repo["name"],
-    "description": repo["description"],
-    "language": repo["language"],
 
-    "stars": repo["stargazers_count"],
-    "forks": repo["forks_count"],
-    "watchers": repo["watchers_count"],
+        license_info = repo.get("license")
 
-    "fork": repo["fork"],
-    "archived": repo["archived"],
+        repo_list.append({
+            "name": repo.get("name"),
+            "description": repo.get("description"),
+            "language": repo.get("language"),
 
-    "topics": repo["topics"],
+            "stars": repo.get("stargazers_count"),
+            "forks": repo.get("forks_count"),
+            "watchers": repo.get("watchers_count"),
 
-    "homepage": repo["homepage"],
+            "fork": repo.get("fork"),
+            "archived": repo.get("archived"),
 
-    "license": (
-        repo["license"]["name"]
-        if repo["license"]
-        else None
-    ),
+            "topics": repo.get("topics", []),
 
-    "has_issues": repo["has_issues"],
-    "has_wiki": repo["has_wiki"],
+            "homepage": repo.get("homepage"),
 
-    "default_branch": repo["default_branch"],
+            "license": (
+                license_info.get("name")
+                if license_info
+                else None
+            ),
 
-    "created_at": repo["created_at"],
-    "updated_at": repo["updated_at"]
-})
+            "has_issues": repo.get("has_issues"),
+            "has_wiki": repo.get("has_wiki"),
+
+            "default_branch": repo.get("default_branch"),
+
+            "created_at": repo.get("created_at"),
+            "updated_at": repo.get("updated_at"),
+        })
 
     return repo_list

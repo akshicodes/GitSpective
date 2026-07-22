@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from backend.services.github_service import (
     get_profile,
@@ -20,14 +20,20 @@ router = APIRouter()
 def analytics(username: str):
 
     profile = get_profile(username)
+
+    if profile is None:
+        raise HTTPException(
+            status_code=404,
+            detail="GitHub user not found."
+        )
+
     repositories = get_repositories(username)
 
-    if profile is None or repositories is None:
-        return {
-            "status": "error",
-            "message": "GitHub user not found.",
-            "data": {}
-        }
+    if repositories is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Repositories could not be fetched."
+        )
     
 
     # Generate all analytics
@@ -50,13 +56,6 @@ def analytics(username: str):
             repositories
         )
 
-    developer_insights = generate_developer_insights(
-            profile,
-            repositories,
-            language_analysis,
-            repository_statistics,
-            repository_activity
-        )
     impact_score = calculate_impact_score(
     profile,
     repositories,
@@ -64,13 +63,17 @@ def analytics(username: str):
     repository_health,
     repository_activity,
 )
+    developer_insights = generate_developer_insights(
+            profile,
+            repositories,
+            language_analysis,
+            repository_statistics,
+            repository_activity
+        )
 
    
 
     return {
-        "status": "success",
-        "message": "Analytics generated successfully.",
-        "data": {
             "profile": profile,
             "repositories": repositories,
             "language_analysis": language_analysis,
@@ -81,4 +84,4 @@ def analytics(username: str):
             "repository_health": repository_health,
             "developer_insights": developer_insights
         }
-    }
+    

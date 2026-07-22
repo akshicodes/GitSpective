@@ -1,19 +1,15 @@
-def analyze_languages(repositories): #Counting how many repositories use each programming language.
+from collections import Counter
 
 
-    language_count = {}
+def analyze_languages(repositories):
+
+    language_counter = Counter()
 
     for repo in repositories:
 
-        language = repo["language"]
+        language = repo.get("language")
 
-        if language is None:
-            continue
+        if language:
+            language_counter[language] += 1
 
-        if language in language_count:
-            language_count[language] += 1
-
-        else:
-            language_count[language] = 1
-
-    return language_count
+    return dict(language_counter)

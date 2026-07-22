@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from ..services.github_service import get_profile
 
 router = APIRouter()
@@ -10,11 +10,10 @@ def profile(username: str):
     profile_data = get_profile(username)
 
     if profile_data is None:
-        return {
-            "status": "error",
-            "message": "GitHub user not found.",
-            "data": {}
-        }
+        raise HTTPException(
+        status_code=404,
+        detail="GitHub user not found."
+    )
 
     return {
         "status": "success",

@@ -1,3 +1,4 @@
+from fastapi import APIRouter, HTTPException
 from fastapi import APIRouter
 
 from backend.services.github_service import get_repositories
@@ -11,11 +12,10 @@ def repository_growth(username: str):
     repositories = get_repositories(username)
 
     if repositories is None:
-        return {
-            "status": "error",
-            "message": "GitHub user not found.",
-            "data": {}
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="GitHub user not found."
+        )
 
     growth = calculate_repository_growth(repositories)
 

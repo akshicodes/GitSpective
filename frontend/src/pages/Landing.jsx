@@ -1,3 +1,5 @@
+import { useAnalytics } from "../context/AnalyticsContext";
+import { getAnalytics } from "../services/githubAPI";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -13,10 +15,12 @@ const FEATURES = [
 
 export default function Landing() {
   const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+const [error, setError] = useState("");
+const navigate = useNavigate();
 
-  function handleAnalyze(e) {
+const { setAnalytics } = useAnalytics();
+
+  async function handleAnalyze(e) {
     e.preventDefault();
     const trimmed = username.trim();
 
@@ -26,7 +30,19 @@ export default function Landing() {
     }
 
     setError("");
-    navigate(`/dashboard/${encodeURIComponent(trimmed)}`);
+
+  try {
+  const response = await getAnalytics(trimmed);
+
+  console.log("Analytics Response:", response);
+  setAnalytics(response);
+  navigate(`/dashboard/${encodeURIComponent(trimmed)}`);
+  console.log("Saved Analytics:", response);
+  
+  } catch (err) {
+  console.error(err);
+  setError("Unable to fetch GitHub profile.");
+  }
   }
 
   return (
