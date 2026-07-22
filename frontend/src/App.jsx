@@ -1,7 +1,12 @@
-import Home from "./pages/Home";
+import { Routes, Route } from "react-router-dom";
+import Landing from "./pages/Landing";
+import Dashboard from "./pages/Dashboard";
 
-function App() {
-  return <Home />;
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/dashboard/:username" element={<Dashboard />} />
+    </Routes>
+  );
 }
-
-export default App;
