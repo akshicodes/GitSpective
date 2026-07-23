@@ -1,224 +1,284 @@
-# GitSpective
+# 🚀 GitHub Developer Analytics
 
-> Turn a public GitHub profile into a clear, visual developer story.
+> Transform any GitHub profile into meaningful developer insights through intelligent analytics, repository health scoring, impact measurement, and interactive visualizations.
 
-GitSpective is a full-stack GitHub analytics dashboard that goes beyond profile viewing. Enter a GitHub username and the app collects public data, evaluates repository quality and activity, calculates a composite impact score, and presents practical strengths and opportunities in a polished responsive interface.
-
-## Project overview
-
-A GitHub profile contains useful signals, but raw stars, repository counts, and commit history are hard to interpret in isolation. GitSpective brings those signals together into an opinionated analytics experience for developers, recruiters, and technical communities.
-
-The project combines a React analytics dashboard with a FastAPI service layer and reusable Python analytics modules. The frontend is built for exploration; the backend is built for clear separation of data retrieval, analysis, and API delivery.
-
-## What it delivers
-
-- Search and analyse any public GitHub username.
-- Profile summary with followers, repositories, stars, and activity indicators.
-- Repository health ranking based on documentation, maintenance, and community signals.
-- Custom impact score with an interpretable score breakdown.
-- Language distribution, technology diversity, and repository portfolio statistics.
-- Activity and maintenance consistency analysis.
-- Rule-based developer style, strengths, and growth opportunities.
-- A year-selectable GitHub contribution graph, including totals and daily hover details.
-- Responsive dashboard, repository, and analytics views with motion and visual hierarchy.
-
-## Features
-
-| Area | Highlights |
-| --- | --- |
-| Profile intelligence | Avatar, bio, social metrics, company, location, website, and account history |
-| Repository analytics | Public repository inventory, stars, forks, licensing, topics, activity, and status |
-| Repository health | Per-repository health score, strengths, suggestions, and health leaderboard |
-| Activity analysis | Active versus inactive repositories, maintenance consistency, last activity, and summary |
-| Impact scoring | Composite score built from health, activity, community, technology diversity, and portfolio factors |
-| Developer insights | Developer style, summary, strengths, and actionable improvement opportunities |
-| Contribution history | Interactive year selector, annual totals, and GitHub-style contribution heatmap |
-| Portfolio snapshot | Top repositories, documentation coverage, archived/forked repository counts, and average health |
-
-## Technology stack
-
-| Layer | Technologies |
-| --- | --- |
-| Frontend | React 19, Vite, React Router, Tailwind CSS, Framer Motion |
-| Data visualisation | Recharts, custom contribution heatmap |
-| UI | Lucide React icons, responsive glassmorphism design system |
-| Backend | Python, FastAPI, Uvicorn, Pydantic |
-| Data access | Requests, GitHub REST API, GitHub GraphQL API for contribution calendars |
-| Configuration | python-dotenv, environment variables |
-| Tooling | npm, oxlint, Vite production builds |
-
-## Application architecture
-
-```text
-GitHub username
-      |
-      v
-React + Vite frontend  ----->  FastAPI API layer
-                                      |
-                                      v
-                           GitHub service (REST / GraphQL)
-                                      |
-                                      v
-                     Reusable analytics modules and score calculators
-                                      |
-                                      v
-                         Unified analytics response for the dashboard
-```
-
-## Frontend structure
-
-```text
-frontend/
-├── src/
-│   ├── components/          # Reusable UI: profile, stats, insights, analytics, navigation
-│   ├── context/             # Shared analytics state
-│   ├── pages/               # Landing, Dashboard, Repositories, Repository, Analytics
-│   ├── services/            # API client and request helpers
-│   ├── App.jsx              # Routes and page composition
-│   └── index.css            # Tailwind and shared visual styles
-├── package.json
-└── vite.config.js
-```
-
-The frontend uses a contextual analytics store so data fetched after a username search can be shared across the Dashboard, Repositories, and Analytics routes. Components are deliberately separated by responsibility to keep the visual system reusable and the pages easy to extend.
-
-## Backend structure
-
-```text
-backend/
-├── analytics/               # Pure analysis and scoring modules
-│   ├── developer_insights.py
-│   ├── impact_score.py
-│   ├── language_analysis.py
-│   ├── repository_activity.py
-│   ├── repository_growth.py
-│   ├── repository_health.py
-│   └── repository_statistics.py
-├── routes/                  # Focused FastAPI route handlers
-├── services/
-│   └── github_service.py    # GitHub REST/GraphQL integration and pagination
-├── models/                  # API-facing data models
-├── requirements.txt
-└── main.py                  # App bootstrap, CORS, and router registration
-```
-
-The backend keeps GitHub retrieval separate from analytics logic. Each route can be consumed independently, while `GET /analytics/{username}` composes the full report used by the frontend.
-
-## API endpoints
-
-Base URL: `http://127.0.0.1:8000`
-
-| Method | Endpoint | Purpose |
-| --- | --- | --- |
-| GET | `/` | API status message |
-| GET | `/health` | Health check for the backend |
-| GET | `/profile/{username}` | Public GitHub profile details |
-| GET | `/repositories/{username}` | Public repositories and metadata |
-| GET | `/languages/{username}` | Language distribution across repositories |
-| GET | `/repository-statistics/{username}` | Portfolio totals, averages, stars, forks, and notable repositories |
-| GET | `/repository-growth/{username}` | Year-by-year repository creation counts |
-| GET | `/repository-activity/{username}` | Maintenance consistency and active/inactive repository analysis |
-| GET | `/repository-health/{username}` | Per-repository health scores, strengths, and suggestions |
-| GET | `/impact-score/{username}` | Composite impact score, level, and breakdown |
-| GET | `/developer-insights/{username}` | Developer style, strengths, recommendations, and summary |
-| GET | `/analytics/{username}` | Unified profile, repository, score, insight, commit, and contribution-calendar report |
-
-### Example request
-
-```bash
-curl http://127.0.0.1:8000/analytics/octocat
-```
-
-For the frontend, the unified endpoint is the preferred integration point because it supplies the complete dashboard report in a single request.
-
-## Getting started
-
-### Prerequisites
-
-- Python 3.10+
-- Node.js 20+ and npm
-- A GitHub personal access token for contribution-calendar data
-
-### 1. Clone the repository
-
-```bash
-git clone <your-repository-url>
-cd Github_Profile_Dashboard_Analysis
-```
-
-### 2. Configure and run the backend
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate          # Windows PowerShell
-pip install -r backend/requirements.txt
-```
-
-Create `backend/.env`:
-
-```env
-GITHUB_TOKEN=your_github_personal_access_token
-```
-
-Then start FastAPI:
-
-```bash
-python -m uvicorn backend.main:app --reload
-```
-
-The API starts at `http://127.0.0.1:8000`, with interactive Swagger documentation available at `http://127.0.0.1:8000/docs`.
-
-> The token enables GitHub GraphQL contribution calendars. Treat it as a secret and never commit `backend/.env`.
-
-### 3. Run the frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open the Vite URL shown in the terminal (normally `http://localhost:5173`).
-
-### Frontend commands
-
-```bash
-npm run dev       # Start the development server
-npm run build     # Create an optimised production build
-npm run lint      # Lint the frontend source
-npm run preview   # Preview the production build
-```
-
-## Why this project matters
-
-GitSpective is designed to solve a real communication problem: a GitHub profile is rich in evidence, but difficult to read quickly. It turns that evidence into a clear conversation starter.
-
-- **For developers:** identify strengths, portfolio gaps, and projects worth improving.
-- **For recruiters and hiring teams:** quickly understand activity, project quality, technical breadth, and open-source presence.
-- **For students and early-career engineers:** see concrete ways to make a public portfolio more credible and complete.
-- **For technical evaluators:** use focused API endpoints or the unified report in other tools and workflows.
-
-## Resume-ready engineering highlights
-
-- Built a full-stack product rather than a static dashboard: React client, FastAPI API, external API integration, and reusable analytics logic.
-- Designed a unified analytics endpoint that composes multiple independent analysis modules into one frontend-friendly response.
-- Implemented GitHub REST pagination for complete repository retrieval and GitHub GraphQL queries for contribution calendars.
-- Created explainable scoring systems for repository health and developer impact instead of presenting opaque metrics.
-- Delivered a responsive, data-dense UI with reusable components, route-level navigation, client-side state sharing, and subtle motion.
-- Included thoughtful empty states and fallbacks for unavailable GitHub data and token-dependent contribution history.
-
-## Roadmap
-
-- [ ] Compare two GitHub profiles side by side
-- [ ] Export analytics reports as PDF
-- [ ] Add repository filtering and search
-- [ ] Save or share analysis reports
-- [ ] Add deployed demo and production environment configuration
-
-## License
-
-This project is intended as a portfolio and learning project. Add a license file before distributing or accepting external contributions.
 
 ---
 
-If GitSpective helped you think differently about GitHub profiles, consider giving the repository a star.
+## 📖 Overview
+
+GitHub Developer Analytics is a full-stack analytics platform that fetches public GitHub data and converts it into actionable developer insights.
+
+Instead of only displaying profile information, the application evaluates repository quality, developer activity, technology diversity, community engagement, and overall impact using a custom analytics engine.
+
+The backend has been fully implemented using **FastAPI**, while the frontend dashboard is currently under development using **React**.
+
+---
+
+## ✨ Current Features (Backend)
+
+### 👤 Profile Analysis
+- Fetch GitHub profile information
+- Avatar, bio, followers & following
+- Public repository count
+- Company, location & website
+- Account creation date
+
+---
+
+### 📂 Repository Analysis
+- Fetch all public repositories
+- Repository language
+- Stars & forks
+- Topics
+- License
+- Homepage
+- Watchers
+- Repository status
+- Created & updated dates
+
+---
+
+### 💻 Language Analysis
+- Programming language distribution
+- Technology diversity calculation
+- Primary language identification
+
+---
+
+### 📊 Repository Statistics
+- Total repositories
+- Original repositories
+- Forked repositories
+- Archived repositories
+- Total stars
+- Total forks
+- Average stars
+- Average forks
+- Most starred repository
+- Most forked repository
+
+---
+
+### 📈 Repository Growth
+Analyze repository creation over time.
+
+Example:
+
+```json
+{
+    "2024": 4,
+    "2025": 9,
+    "2026": 5
+}
+```
+
+---
+
+### 🔥 Repository Activity
+Evaluate overall development consistency.
+
+Metrics include:
+
+- Activity level
+- Active repositories
+- Inactive repositories
+- Maintenance consistency
+- Last activity
+- Activity summary
+
+---
+
+### ❤️ Repository Health Score
+
+Each repository receives a health score based on:
+
+- Documentation
+- Maintenance
+- Community engagement
+- Code quality indicators
+
+Example:
+
+```
+Health Score : 65
+
+Strengths
+✔ Description
+✔ Topics
+✔ Active Maintenance
+
+Suggestions
+• Add Homepage
+• Add LICENSE
+• Improve Community Reach
+```
+
+---
+
+### 🎯 Impact Score
+
+A custom scoring algorithm evaluates overall GitHub influence using:
+
+- Repository Health
+- Development Activity
+- Community Engagement
+- Technology Diversity
+- Repository Portfolio
+
+Example:
+
+```
+Impact Score
+━━━━━━━━━━━━━━
+Repository Health     19
+Activity              25
+Community              1
+Technology             2
+Portfolio              4
+
+Overall Score         51
+```
+
+---
+
+### 💡 Developer Insights
+
+Automatically generates:
+
+- Developer Type
+- Primary Strength
+- Secondary Insights
+- Improvement Suggestions
+- Personalized Summary
+
+Example:
+
+```
+Developer Type
+Emerging Developer
+
+Primary Insight
+Highly Active Maintainer
+
+Suggestion
+Increase community engagement.
+```
+
+---
+
+### 🌐 Unified Analytics API
+
+A single endpoint returns complete analytics.
+
+```
+GET /analytics/{username}
+```
+
+Returns:
+
+- Profile
+- Repository List
+- Language Analysis
+- Repository Statistics
+- Repository Growth
+- Repository Activity
+- Repository Health
+- Impact Score
+- Developer Insights
+
+---
+
+# 🛠 Tech Stack
+
+## Backend
+
+- Python
+- FastAPI
+- Requests
+- GitHub REST API
+- Uvicorn
+
+## Frontend (In Progress)
+
+- React
+- Vite
+- Axios
+- Tailwind CSS
+- Recharts / Chart.js *(planned)*
+
+---
+
+# 📁 Project Structure
+
+```
+GitHub-Developer-Analytics/
+│
+├── backend/
+│   ├── analytics/
+│   ├── routes/
+│   ├── services/
+│   └── main.py
+│
+├── frontend/      🚧
+│
+├── README.md
+├── PRD.md
+└── ARCHITECTURE.md
+```
+
+---
+
+# 🚀 API Endpoints
+
+| Method | Endpoint | Description |
+|----------|-------------------------------|---------------------------|
+| GET | `/profile/{username}` | GitHub Profile |
+| GET | `/repositories/{username}` | Repository Details |
+| GET | `/languages/{username}` | Language Analysis |
+| GET | `/repository-statistics/{username}` | Repository Statistics |
+| GET | `/repository-growth/{username}` | Repository Growth |
+| GET | `/repository-activity/{username}` | Activity Analysis |
+| GET | `/repository-health/{username}` | Repository Health |
+| GET | `/impact-score/{username}` | Impact Score |
+| GET | `/developer-insights/{username}` | AI-like Insights |
+| GET | `/analytics/{username}` | Complete Analytics |
+
+---
+
+
+# 🧠 Why This Project?
+
+Most GitHub profile viewers only display profile information.
+
+This project goes further by analyzing repositories and generating meaningful developer insights, making it useful for:
+
+- Students
+- Recruiters
+- Hiring Managers
+- Open Source Contributors
+- Developers looking to evaluate their GitHub profile
+
+---
+
+# 🏗 Current Progress
+
+| Module | Status |
+|---------|--------|
+| Backend API | ✅ Complete |
+| Analytics Engine | ✅ Complete |
+| Impact Score | ✅ Complete |
+| Repository Health | ✅ Complete |
+| Developer Insights | ✅ Complete |
+| Frontend Dashboard | 🚧 In Progress |
+| Charts & Visualizations | 🚧 In Progress |
+| Deployment | ⏳ Planned |
+
+---
+
+
+## ⭐ If you like this project...
+
+Consider giving it a **star** to support the project and future development!
+
+> **⚠️ Project Status:** Backend Complete ✅ | Frontend Dashboard In Progress 🚧
