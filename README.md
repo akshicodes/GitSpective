@@ -1,4 +1,4 @@
-# 🚀 GitHub Developer Analytics
+#  GitSpective- A New Perspective on GitHub
 
 > Transform any GitHub profile into meaningful developer insights through intelligent analytics, repository health scoring, impact measurement, and interactive visualizations.
 
