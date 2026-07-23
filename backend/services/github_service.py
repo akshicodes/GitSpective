@@ -36,16 +36,24 @@ def get_repositories(username):
     """Fetch all public repositories of a GitHub user."""
 
     url = f"{BASE_URL}/users/{username}/repos"
+    repositories = []
 
     try:
-        response = requests.get(url, timeout=10)
+        for page in range(1, 101):
+            response = requests.get(
+                url,
+                params={"per_page": 100, "page": page, "sort": "updated"},
+                timeout=10,
+            )
+            if response.status_code != 200:
+                return None
+
+            page_repositories = response.json()
+            repositories.extend(page_repositories)
+            if len(page_repositories) < 100:
+                break
     except requests.RequestException:
         return None
-
-    if response.status_code != 200:
-        return None
-
-    repositories = response.json()
     repo_list = []
 
     for repo in repositories:

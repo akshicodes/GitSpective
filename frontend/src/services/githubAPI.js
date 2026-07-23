@@ -1,11 +1,19 @@
-const BASE_URL = "http://127.0.0.1:8000";
+// Override this with VITE_API_URL when the API is hosted elsewhere.
+const BASE_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
 
 // ---------------------------------------------------------------------------
 // Helper
 // ---------------------------------------------------------------------------
 
 async function apiFetch(path) {
-  const response = await fetch(`${BASE_URL}${path}`);
+  let response;
+  try {
+    response = await fetch(`${BASE_URL}${path}`);
+  } catch {
+    throw new Error(
+      "Cannot reach the analytics API. Start the backend at http://127.0.0.1:8000.",
+    );
+  }
   if (!response.ok) {
     const detail = await response.json().catch(() => ({}));
     throw new Error(detail?.detail ?? `Request failed: ${response.status}`);

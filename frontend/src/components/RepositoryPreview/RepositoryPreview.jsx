@@ -1,11 +1,25 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Star, GitFork } from "lucide-react";
 
 const LANGUAGE_COLORS = {
-  Python: "#96B6DD",
-  TypeScript: "#9D4EF4",
-  JavaScript: "#EA4C89",
-  default: "#C9CBD5",
+  JavaScript: '#f1e05a',
+  TypeScript: '#0e3762',
+  Python: '#065ba1',
+  Java: '#b07219',
+  'C++': '#f34b7d',
+  C: '#fff0f0',
+  'C#': '#178600',
+  PHP: '#4f5d95',
+  Ruby: '#701516',
+  Go: '#00add8',
+  Rust: '#dea584',
+  Swift: '#f05138',
+  Kotlin: '#a97bff',
+  Dart: '#00b4ab',
+  HTML: '#e34c26',
+  CSS: '#663399',
+  Vue: '#41b883',
+  Shell: '#89e051',
 };
 
 const HEALTH_STYLES = {
@@ -30,12 +44,14 @@ const HEALTH_STYLES = {
  * @param {string}  username    - GitHub username, used to build the detail route.
  */
 export default function RepositoryPreview({ repo, username }) {
+  const location = useLocation();
   const dot = LANGUAGE_COLORS[repo.language] ?? LANGUAGE_COLORS.default;
   const healthClass = HEALTH_STYLES[repo.health] ?? HEALTH_STYLES.default;
 
   return (
     <Link
       to={`/repository/${username}/${repo.name}`}
+      state={{ from: location.pathname }}
       className="hover-lift flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-5 no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9D4EF4]"
       aria-label={`View details for ${repo.name}`}
     >

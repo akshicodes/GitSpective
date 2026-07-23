@@ -15,10 +15,11 @@ const FEATURES = [
 
 export default function Landing() {
   const [username, setUsername] = useState("");
-const [error, setError] = useState("");
-const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-const { setAnalytics } = useAnalytics();
+  const { setAnalytics } = useAnalytics();
 
   async function handleAnalyze(e) {
     e.preventDefault();
@@ -31,18 +32,18 @@ const { setAnalytics } = useAnalytics();
 
     setError("");
 
-  try {
-  const response = await getAnalytics(trimmed);
+    setIsLoading(true);
 
-  console.log("Analytics Response:", response);
-  setAnalytics(response);
-  navigate(`/dashboard/${encodeURIComponent(trimmed)}`);
-  console.log("Saved Analytics:", response);
-  
-  } catch (err) {
-  console.error(err);
-  setError("Unable to fetch GitHub profile.");
-  }
+    try {
+      const response = await getAnalytics(trimmed);
+      setAnalytics(response);
+      navigate(`/dashboard/${encodeURIComponent(trimmed)}`);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Unable to fetch GitHub profile.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -133,9 +134,10 @@ const { setAnalytics } = useAnalytics();
               </div>
               <button
                 type="submit"
+                disabled={isLoading}
                 className="btn-analyze flex shrink-0 items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 font-display text-[14px] font-semibold text-white sm:py-2.5"
               >
-                Analyze
+                {isLoading ? "Analyzing..." : "Analyze"}
                 <ArrowRight className="h-4 w-4" strokeWidth={2.25} />
               </button>
             </div>

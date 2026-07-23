@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FolderGit2, BarChart3, Menu, X } from "lucide-react";
 import GitHubMark from "../GitHubMark";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, active: true },
-  { label: "Repositories", icon: FolderGit2, active: false },
+  { label: "Dashboard", icon: LayoutDashboard, path: "dashboard" },
+  { label: "Repositories", icon: FolderGit2, path: "repositories" },
   { label: "Analytics", icon: BarChart3, active: false },
 ];
 
@@ -18,6 +18,14 @@ const NAV_ITEMS = [
 export default function Navbar({ username }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const navigateTo = (path) => {
+    if (path && username) {
+      navigate(`/${path}/${encodeURIComponent(username)}`);
+      setOpen(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-bg/80 backdrop-blur-xl">
@@ -45,15 +53,15 @@ export default function Navbar({ username }) {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 md:flex">
-          {NAV_ITEMS.map(({ label, icon: Icon, active }) => (
+          {NAV_ITEMS.map(({ label, icon: Icon, path }) => {
+            const active = pathname.startsWith(`/${path}/`);
+            return (
             <button
               key={label}
               type="button"
               aria-current={active ? "page" : undefined}
               onClick={() => {
-                if (label === "Dashboard" && username) {
-                  navigate(`/dashboard/${username}`);
-                }
+                navigateTo(path);
               }}
               className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
                 active
@@ -64,7 +72,8 @@ export default function Navbar({ username }) {
               <Icon className="h-3.5 w-3.5" strokeWidth={2} />
               {label}
             </button>
-          ))}
+            );
+          })}
         </nav>
 
         {/* Mobile toggle */}
@@ -87,16 +96,15 @@ export default function Navbar({ username }) {
             <span className="font-medium text-secondary">@{username}</span>
           </p>
           <nav className="flex flex-col gap-1">
-            {NAV_ITEMS.map(({ label, icon: Icon, active }) => (
+            {NAV_ITEMS.map(({ label, icon: Icon, path }) => {
+              const active = pathname.startsWith(`/${path}/`);
+              return (
               <button
                 key={label}
                 type="button"
                 aria-current={active ? "page" : undefined}
                 onClick={() => {
-                  if (label === "Dashboard" && username) {
-                    navigate(`/dashboard/${username}`);
-                    setOpen(false);
-                  }
+                  navigateTo(path);
                 }}
                 className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${
                   active
@@ -107,7 +115,8 @@ export default function Navbar({ username }) {
                 <Icon className="h-4 w-4" strokeWidth={2} />
                 {label}
               </button>
-            ))}
+              );
+            })}
           </nav>
         </div>
       )}

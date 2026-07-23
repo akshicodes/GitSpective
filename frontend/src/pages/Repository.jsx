@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -197,7 +197,13 @@ function ErrorState({ title, message, onBack }) {
 export default function Repository() {
   const { username, repoName } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { analytics } = useAnalytics();
+  const backToRepositories = location.state?.from === `/repositories/${username}`;
+  const backPath = backToRepositories
+    ? `/repositories/${username}`
+    : `/dashboard/${username}`;
+  const backLabel = backToRepositories ? "Back to repositories" : "Back to dashboard";
 
   // ---- Guard: context not populated (direct URL access without Landing flow) ----
   if (!analytics) {
@@ -229,7 +235,7 @@ export default function Repository() {
           <ErrorState
             title="Repository not found"
             message={`"${repoName}" was not found in the analytics data for @${username}.`}
-            onBack={() => navigate(`/dashboard/${username}`)}
+            onBack={() => navigate(backPath)}
           />
         </main>
       </div>
@@ -272,7 +278,7 @@ export default function Repository() {
         {/* Back button */}
         <motion.button
           type="button"
-          onClick={() => navigate(`/dashboard/${username}`)}
+          onClick={() => navigate(backPath)}
           variants={fadeUp}
           initial="hidden"
           animate="show"
@@ -280,7 +286,7 @@ export default function Repository() {
           className="mb-7 flex items-center gap-2 text-sm text-muted transition-colors hover:text-secondary"
         >
           <ArrowLeft className="h-4 w-4" strokeWidth={2} />
-          Back to dashboard
+          {backLabel}
         </motion.button>
 
         {/* ---- Hero header ---- */}

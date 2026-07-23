@@ -1,5 +1,7 @@
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { CalendarDays, Code2, GitCommitHorizontal, Trophy } from "lucide-react";
 import { useAnalytics } from "../context/AnalyticsContext";
 
 import Navbar from "../components/Navbar/Navbar";
@@ -7,9 +9,7 @@ import ProfileCard from "../components/ProfileCard/ProfileCard";
 import StatsCard from "../components/StatsCard/StatsCard";
 import ImpactScore from "../components/ImpactScore/ImpactScore";
 import InsightCard from "../components/InsightCard/InsightCard";
-import RepositoryPreview from "../components/RepositoryPreview/RepositoryPreview";
 import SectionTitle from "../components/SectionTitle/SectionTitle";
-import ActivitySummary from "../components/dashboard/ActivitySummary";
 
 
 
@@ -17,6 +17,22 @@ const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   show: { opacity: 1, y: 0 },
 };
+
+const LANGUAGE_COLORS = ["#EA4C89", "#9D4EF4", "#96B6DD", "#46D9B7", "#F7B955", "#F17C5C"];
+
+function getMostUpdatedMonth(repositories) {
+  const months = new Map();
+
+  repositories.forEach((repository) => {
+    if (!repository.updated_at) return;
+    const date = new Date(repository.updated_at);
+    if (Number.isNaN(date.getTime())) return;
+    const month = date.toLocaleString("en-US", { month: "long" });
+    months.set(month, (months.get(month) ?? 0) + 1);
+  });
+
+  return [...months.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "No activity";
+}
 
 /**
  * Dashboard page — UI only, static placeholder data.
@@ -42,10 +58,6 @@ export default function Dashboard() {
     </div>
   );
   }
-console.log("Repository Activity:", analytics.repository_activity);
-
-const activity = analytics.repository_activity;
-
   const profile = {
   name: analytics.profile.name,
   username: analytics.profile.username,   
@@ -103,29 +115,6 @@ const insights = [
   })),
 ];
 
-const repositoryHealthMap = Object.fromEntries(
-  analytics.repository_health.map((repo) => [
-    repo.repository,
-    repo,
-  ])
-);
-const repositories = analytics.repositories.map((repo) => {
-  const health = repositoryHealthMap[repo.name];
-
-  return {
-    id: repo.id,
-    name: repo.name,
-    description: repo.description || "No description available.",
-    language: repo.language || "Unknown",
-    stars: repo.stars,
-    forks: repo.forks,
-
-    health: health?.health_status || "Unknown",
-    healthScore: health?.health_score || 0,
-  };
-});
-
-console.log("Repository Activity:", analytics.repository_activity);
 console.log("Repository Health:", analytics.repository_health);
 
 const impactData = {
@@ -136,12 +125,37 @@ const impactData = {
 };
 
 
-const languageChartData = Object.entries(analytics.language_analysis).map(
-  ([language, count]) => ({
-    name: language,
-    value: count,
-  })
-);
+const languageChartData = Object.entries(analytics.language_analysis ?? {})
+  .map(([language, count]) => ({ name: language, value: count }))
+  .sort((a, b) => b.value - a.value);
+const topLanguage = languageChartData[0]?.name ?? "No language data";
+const mostActiveMonth = getMostUpdatedMonth(analytics.repositories ?? []);
+const githubMetrics = [
+  {
+    label: "Total contributions",
+    value: "—",
+    description: "Not available from the public GitHub API",
+    icon: GitCommitHorizontal,
+  },
+  {
+    label: "Most active month",
+    value: mostActiveMonth,
+    description: "Based on repository update activity",
+    icon: CalendarDays,
+  },
+  {
+    label: "Top language",
+    value: topLanguage,
+    description: languageChartData[0] ? `${languageChartData[0].value} repositories` : "No language data found",
+    icon: Code2,
+  },
+  {
+    label: "Top repository",
+    value: analytics.repository_statistics.most_starred_repo ?? "No repositories",
+    description: "Most starred public repository",
+    icon: Trophy,
+  },
+];
 
   return (
     <div className="min-h-screen bg-bg">
@@ -227,44 +241,94 @@ const languageChartData = Object.entries(analytics.language_analysis).map(
 </div>
             </motion.section>
 
-            {/* Recent activity */}
-            {/* Repository Activity */}
-<motion.section
-  variants={fadeUp}
-  initial="hidden"
-  whileInView="show"
-  viewport={{ once: true, margin: "-60px" }}
-  transition={{ duration: 0.5 }}
-  className="glass hover-lift rounded-3xl p-6 sm:p-7"
->
-  <SectionTitle
-    title="Repository Activity"
-    subtitle="Overall maintenance and activity summary."
-  />
-
-  <ActivitySummary activity={analytics.repository_activity} />
-</motion.section>
-
-            {/* Repository highlights */}
-            <motion.section
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5 }}
-            >
-              <SectionTitle
-                title="Repository highlights"
-                subtitle="A few projects worth a closer look."
-              />
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {repositories.map((repo) => (
-  <RepositoryPreview key={repo.id} repo={repo} username={profile.username} />
-))}
-              </div>
-            </motion.section>
           </div>
         </div>
+
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5 }}
+          className="mt-10"
+        >
+          <SectionTitle
+            title="GitHub analytics"
+            subtitle="A snapshot of languages, activity, and portfolio highlights."
+          />
+          <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <div className="glass rounded-3xl p-6 sm:p-7">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-primary">Top languages</p>
+                  <p className="mt-1 text-[13px] text-muted">Distribution across public repositories</p>
+                </div>
+                <span className="rounded-lg bg-white/5 px-2.5 py-1 text-xs text-[#96B6DD]">
+                  {languageChartData.length} {languageChartData.length === 1 ? "language" : "languages"}
+                </span>
+              </div>
+
+              {languageChartData.length ? (
+                <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-around">
+                  <div className="h-56 w-full max-w-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={languageChartData}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius={58}
+                          outerRadius={84}
+                          paddingAngle={4}
+                          stroke="none"
+                        >
+                          {languageChartData.map((entry, index) => (
+                            <Cell key={entry.name} fill={LANGUAGE_COLORS[index % LANGUAGE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(value, _name, item) => [`${value} repositories`, item.payload.name]}
+                          contentStyle={{ background: "#1d1828", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "12px" }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="w-full space-y-3 sm:max-w-[190px]">
+                    {languageChartData.map((language, index) => (
+                      <div key={language.name} className="flex items-center justify-between gap-3 text-sm">
+                        <span className="flex min-w-0 items-center gap-2 text-secondary">
+                          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: LANGUAGE_COLORS[index % LANGUAGE_COLORS.length] }} />
+                          <span className="truncate">{language.name}</span>
+                        </span>
+                        <span className="font-medium text-primary">{language.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="flex h-56 items-center justify-center text-sm text-muted">No language data is available yet.</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {githubMetrics.map((metric) => {
+                const Icon = metric.icon;
+                return (
+                  <div key={metric.label} className="glass hover-lift flex min-h-40 flex-col justify-between rounded-2xl p-5">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#96B6DD]">
+                      <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                    </span>
+                    <div className="mt-5">
+                      <p className="truncate font-display text-xl font-semibold text-primary" title={metric.value}>{metric.value}</p>
+                      <p className="mt-1 text-[13px] text-secondary">{metric.label}</p>
+                      <p className="mt-1 text-xs text-muted">{metric.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.section>
 
         {/* Footer */}
         <footer className="mt-14 flex flex-col items-center gap-1 border-t border-white/10 pt-6 text-center text-[12.5px] text-muted sm:flex-row sm:justify-between">
