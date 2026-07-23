@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+from pathlib import Path
+
+load_dotenv(Path(__file__).parent / ".env")
 from fastapi import FastAPI
 from backend.routes.profile import router as profile_router
 from backend.routes.repositories import router as repository_router
@@ -13,8 +17,8 @@ from backend.routes.developer_insights import (
     router as developer_insights_router
 )
 
-
-
+import os
+print("Token loaded:", os.getenv("GITHUB_TOKEN") is not None)
 
 
 app = FastAPI()

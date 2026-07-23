@@ -6,7 +6,7 @@ import GitHubMark from "../GitHubMark";
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, path: "dashboard" },
   { label: "Repositories", icon: FolderGit2, path: "repositories" },
-  { label: "Analytics", icon: BarChart3, active: false },
+  { label: "Analytics", icon: BarChart3, path: "analytics" },
 ];
 
 /**

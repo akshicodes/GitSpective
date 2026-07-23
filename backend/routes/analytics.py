@@ -3,6 +3,8 @@ from fastapi import APIRouter, HTTPException
 from backend.services.github_service import (
     get_profile,
     get_repositories,
+    get_commit_statistics,
+    get_contribution_calendar,
 )
 
 from backend.analytics.language_analysis import analyze_languages
@@ -56,6 +58,9 @@ def analytics(username: str):
             repositories
         )
 
+    commit_statistics = get_commit_statistics(username, repositories)
+    contribution_calendar = get_contribution_calendar(username)
+
     impact_score = calculate_impact_score(
     profile,
     repositories,
@@ -82,6 +87,8 @@ def analytics(username: str):
             "repository_growth": repository_growth,
             "repository_activity": repository_activity,
             "repository_health": repository_health,
+            "commit_statistics": commit_statistics,
+            "contribution_calendar": contribution_calendar,
             "developer_insights": developer_insights
         }
     

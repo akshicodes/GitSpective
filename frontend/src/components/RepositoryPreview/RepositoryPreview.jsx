@@ -3,6 +3,7 @@ import { Star, GitFork } from "lucide-react";
 
 const LANGUAGE_COLORS = {
   JavaScript: '#f1e05a',
+  'Jupyter Notebook': '#ff8a00',
   TypeScript: '#0e3762',
   Python: '#065ba1',
   Java: '#b07219',
