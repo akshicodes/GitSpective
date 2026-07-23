@@ -87,7 +87,7 @@ The application is organised around three focused views:
 ```mermaid
 flowchart LR
     U[User enters a GitHub username] --> F[React + Vite frontend]
-    F -->|GET /analytics/{username}| A[FastAPI API]
+    F -->|"GET /analytics/{username}"| A[FastAPI API]
     A --> G[GitHub REST API]
     G --> S[GitHub service layer]
     S --> E[Analytics engine]
