@@ -32,18 +32,6 @@ const HEALTH_STYLES = {
   default: "text-secondary bg-white/5 border-white/15",
 };
 
-/**
- * Repository highlight card. Clicking navigates to the Repository detail page.
- *
- * @param {object}  repo
- * @param {string}  repo.name
- * @param {string}  repo.description
- * @param {string}  repo.language
- * @param {number}  repo.stars
- * @param {number}  repo.forks
- * @param {string}  repo.health - Health status label (e.g. "Excellent", "Good").
- * @param {string}  username    - GitHub username, used to build the detail route.
- */
 export default function RepositoryPreview({ repo, username }) {
   const location = useLocation();
   const dot = LANGUAGE_COLORS[repo.language] ?? LANGUAGE_COLORS.default;

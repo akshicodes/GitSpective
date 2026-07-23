@@ -24,10 +24,6 @@ def calculate_repository_health(repositories):
             "quality": 0
         }
 
-        # -------------------------
-        # Documentation
-        # -------------------------
-
         if repo.get("description"):
             score += 10
             breakdown["documentation"] += 10
@@ -48,10 +44,6 @@ def calculate_repository_health(repositories):
             strengths.append("Repository includes a project homepage.")
         else:
             suggestions.append("Add a homepage or live demo link.")
-
-        # -------------------------
-        # Maintenance
-        # -------------------------
 
         updated_at = repo.get("updated_at")
 
@@ -78,10 +70,6 @@ def calculate_repository_health(repositories):
         else:
             suggestions.append("Repository is archived.")
 
-        # -------------------------
-        # Community
-        # -------------------------
-
         stars = repo.get("stars", 0)
         forks = repo.get("forks", 0)
         watchers = repo.get("watchers", 0)
@@ -101,10 +89,6 @@ def calculate_repository_health(repositories):
             score += 5
             breakdown["community"] += 5
 
-        # -------------------------
-        # Quality
-        # -------------------------
-
         if repo.get("license"):
             score += 10
             breakdown["quality"] += 10
@@ -123,10 +107,6 @@ def calculate_repository_health(repositories):
         if repo.get("default_branch"):
             score += 5
             breakdown["quality"] += 5
-
-        # -------------------------
-        # Health Status
-        # -------------------------
 
         if score >= 90:
             status = "Excellent"

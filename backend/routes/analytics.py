@@ -1,4 +1,7 @@
 from fastapi import APIRouter, HTTPException
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
+from time import monotonic
 
 from backend.services.github_service import (
     get_profile,
@@ -17,11 +20,41 @@ from backend.analytics.developer_insights import generate_developer_insights
 
 router = APIRouter()
 
+ANALYTICS_CACHE_TTL_SECONDS = 300
+analytics_cache = {}
+analytics_cache_lock = Lock()
+
+
+def get_cached_analytics(username):
+    with analytics_cache_lock:
+        cached = analytics_cache.get(username.lower())
+        if cached is None:
+            return None
+
+        created_at, report = cached
+        if monotonic() - created_at >= ANALYTICS_CACHE_TTL_SECONDS:
+            analytics_cache.pop(username.lower(), None)
+            return None
+
+        return report
+
+
+def cache_analytics(username, report):
+    with analytics_cache_lock:
+        analytics_cache[username.lower()] = (monotonic(), report)
+
 
 @router.get("/analytics/{username}")
 def analytics(username: str):
+    cached_report = get_cached_analytics(username)
+    if cached_report is not None:
+        return cached_report
 
-    profile = get_profile(username)
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        profile_future = executor.submit(get_profile, username)
+        repositories_future = executor.submit(get_repositories, username)
+        profile = profile_future.result()
+        repositories = repositories_future.result()
 
     if profile is None:
         raise HTTPException(
@@ -29,16 +62,11 @@ def analytics(username: str):
             detail="GitHub user not found."
         )
 
-    repositories = get_repositories(username)
-
     if repositories is None:
         raise HTTPException(
             status_code=404,
             detail="Repositories could not be fetched."
         )
-    
-
-    # Generate all analytics
     language_analysis = analyze_languages(repositories)
 
 
@@ -58,8 +86,14 @@ def analytics(username: str):
             repositories
         )
 
-    commit_statistics = get_commit_statistics(username, repositories)
-    contribution_calendar = get_contribution_calendar(username)
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        commit_statistics_future = executor.submit(
+            get_commit_statistics, username, repositories
+        )
+        contribution_calendar_future = executor.submit(
+            get_contribution_calendar, username)
+        commit_statistics = commit_statistics_future.result()
+        contribution_calendar = contribution_calendar_future.result()
 
     impact_score = calculate_impact_score(
     profile,
@@ -76,9 +110,9 @@ def analytics(username: str):
             repository_activity
         )
 
-   
 
-    return {
+
+    report = {
             "profile": profile,
             "repositories": repositories,
             "language_analysis": language_analysis,
@@ -91,4 +125,6 @@ def analytics(username: str):
             "contribution_calendar": contribution_calendar,
             "developer_insights": developer_insights
         }
-    
+
+    cache_analytics(username, report)
+    return report

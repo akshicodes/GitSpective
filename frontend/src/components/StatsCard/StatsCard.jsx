@@ -7,14 +7,6 @@ const ICONS = {
   stars: Star,
 };
 
-/**
- * Single quick-stat tile. Rendered in a grid, one per metric.
- *
- * @param {object} stat
- * @param {string} stat.key - Matches an icon in ICONS ("repositories" | "followers" | "following" | "stars").
- * @param {string} stat.label
- * @param {number} stat.value
- */
 export default function StatsCard({ stat }) {
   const Icon = ICONS[stat.key] ?? FolderGit2;
 

@@ -1,6 +1,7 @@
 import requests
 import os
 from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import parse_qs, urlparse
 
 BASE_URL = "https://api.github.com"
@@ -55,9 +56,9 @@ def get_contribution_calendar(username):
         if years_response.status_code != 200 or not years:
             return {"available": False, "calendars": [], "reason": "GitHub contribution history could not be loaded."}
 
-        calendars = []
         current_year = datetime.now(timezone.utc).year
-        for year in sorted(years):
+
+        def fetch_calendar(year):
             to_date = f"{year}-12-31T23:59:59Z" if year < current_year else datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
             response = requests.post(
                 f"{BASE_URL}/graphql",
@@ -75,7 +76,15 @@ def get_contribution_calendar(username):
             payload = response.json()
             calendar = payload.get("data", {}).get("user", {}).get("contributionsCollection", {}).get("contributionCalendar")
             if response.status_code == 200 and calendar:
-                calendars.append({"year": year, **calendar})
+                return {"year": year, **calendar}
+            return None
+
+        with ThreadPoolExecutor(max_workers=min(4, len(years))) as executor:
+            calendars = [
+                calendar
+                for calendar in executor.map(fetch_calendar, sorted(years))
+                if calendar is not None
+            ]
     except (requests.RequestException, ValueError):
         return {"available": False, "calendars": [], "reason": "GitHub contribution history could not be loaded."}
 
@@ -97,8 +106,6 @@ def _get_repository_commit_count(username, repository):
         )
     except requests.RequestException:
         return None
-
-    # GitHub returns 409 for an empty repository; it has no commits to count.
     if response.status_code == 409:
         return 0
     if response.status_code != 200:
@@ -125,17 +132,17 @@ def get_commit_statistics(username, repositories):
 
     if response is not None and response.status_code == 200:
         return {"total_commits": response.json().get("total_count", 0), "available": True}
+    with ThreadPoolExecutor(max_workers=min(6, len(repositories) or 1)) as executor:
+        commit_counts = executor.map(
+            lambda repository: _get_repository_commit_count(
+                username, repository.get("name")
+            ),
+            repositories,
+        )
+        successful_counts = [count for count in commit_counts if count is not None]
 
-    # Commit search has a restrictive rate limit. Fall back to per-repository
-    # pagination so the dashboard remains useful when search is unavailable.
-    total_commits = 0
-    queried_repositories = 0
-    for repository in repositories:
-        commit_count = _get_repository_commit_count(username, repository.get("name"))
-        if commit_count is None:
-            continue
-        total_commits += commit_count
-        queried_repositories += 1
+    total_commits = sum(successful_counts)
+    queried_repositories = len(successful_counts)
 
     return {
         "total_commits": total_commits,
@@ -176,7 +183,7 @@ def get_public_commit_activity(username):
     return {"daily_activity": daily_activity, "available": True}
 
 
-def get_profile(username): # fetch profile details from GitHub.
+def get_profile(username):
 
     url = f"{BASE_URL}/users/{username}"
 

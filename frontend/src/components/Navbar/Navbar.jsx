@@ -9,12 +9,6 @@ const NAV_ITEMS = [
   { label: "Analytics", icon: BarChart3, path: "analytics" },
 ];
 
-/**
- * Top navigation bar.
- *
- * @param {string} username - Profile currently being viewed, shown as
- *   "Viewing Profile: @username" and used to label the active session.
- */
 export default function Navbar({ username }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -30,7 +24,7 @@ export default function Navbar({ username }) {
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-bg/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-        {/* Logo + viewing profile */}
+
         <div className="flex min-w-0 items-center gap-3 sm:gap-5">
           <a href="/" className="flex shrink-0 items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/5">
@@ -51,7 +45,7 @@ export default function Navbar({ username }) {
           </div>
         </div>
 
-        {/* Desktop nav */}
+
         <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 md:flex">
           {NAV_ITEMS.map(({ label, icon: Icon, path }) => {
             const active = pathname.startsWith(`/${path}/`);
@@ -76,7 +70,7 @@ export default function Navbar({ username }) {
           })}
         </nav>
 
-        {/* Mobile toggle */}
+
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
@@ -88,7 +82,7 @@ export default function Navbar({ username }) {
         </button>
       </div>
 
-      {/* Mobile menu */}
+
       {open && (
         <div className="border-t border-white/10 px-5 pb-4 pt-2 md:hidden">
           <p className="mb-3 text-sm text-muted">

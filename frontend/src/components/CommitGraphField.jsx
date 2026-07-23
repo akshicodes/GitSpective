@@ -1,14 +1,5 @@
 import { useMemo } from "react";
 
-/**
- * Signature background element.
- *
- * GitSpective's whole premise is reading structure out of a git history, so
- * the ambient background isn't a generic particle field — it's a faint,
- * frozen commit graph: branch lines that fork and merge, with commit nodes
- * at the joins. It sits behind the glass card and the color blobs, quiet
- * enough to read as texture rather than decoration.
- */
 export default function CommitGraphField() {
   const paths = useMemo(
     () => [
@@ -16,7 +7,6 @@ export default function CommitGraphField() {
       { d: "M120,140 L120,660", lane: 1 },
       { d: "M200,40 L200,860", lane: 2 },
       { d: "M280,220 L280,560", lane: 3 },
-      // forks / merges between lanes
       { d: "M40,220 C70,220 90,260 120,260", lane: 0 },
       { d: "M120,420 C150,420 170,460 200,460", lane: 1 },
       { d: "M200,600 C230,600 250,560 280,560", lane: 2 },

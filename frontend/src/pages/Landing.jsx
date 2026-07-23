@@ -48,7 +48,7 @@ export default function Landing() {
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-bg">
-      {/* Ambient background: color blobs + commit-graph texture */}
+
       <div className="absolute inset-0">
         <div
           className="blob blob-animate -left-32 -top-32 h-[420px] w-[420px]"
@@ -63,7 +63,7 @@ export default function Landing() {
           style={{ background: "#96B6DD" }}
         />
         <CommitGraphField />
-        {/* Vignette so the card stays readable over the blobs */}
+
         <div
           className="absolute inset-0"
           style={{
@@ -73,7 +73,7 @@ export default function Landing() {
         />
       </div>
 
-      {/* Centered content */}
+
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-5 py-16 sm:px-8">
         <motion.section
           initial={{ opacity: 0, y: 28 }}
@@ -81,7 +81,7 @@ export default function Landing() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="glass w-full max-w-xl rounded-[28px] px-7 py-10 shadow-[0_20px_70px_-20px_rgba(0,0,0,0.6)] sm:rounded-[32px] sm:px-12 sm:py-14"
         >
-          {/* Logo */}
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -91,7 +91,7 @@ export default function Landing() {
             <GitHubMark className="h-7 w-7 text-white" />
           </motion.div>
 
-          {/* Project name + tagline */}
+
           <div className="text-center">
             <h1
               className="font-display text-2xl font-semibold tracking-tight text-white sm:text-[1.75rem]"
@@ -104,7 +104,7 @@ export default function Landing() {
             </p>
           </div>
 
-          {/* Hero heading + subtitle */}
+
           <div className="mx-auto mt-9 max-w-md text-center sm:mt-11">
             <h2 className="font-display text-[2.1rem] font-semibold leading-[1.12] tracking-tight text-white sm:text-[2.6rem]">
               A new <span className="text-gradient">perspective</span> on GitHub
@@ -114,7 +114,7 @@ export default function Landing() {
             </p>
           </div>
 
-          {/* Search */}
+
           <form onSubmit={handleAnalyze} className="mx-auto mt-9 max-w-md sm:mt-10" noValidate>
             <div className="glass-input flex flex-col gap-2 rounded-2xl p-2 sm:flex-row sm:items-center sm:gap-0">
               <div className="flex flex-1 items-center gap-2.5 px-3 py-2.5 sm:py-2">
@@ -156,7 +156,7 @@ export default function Landing() {
             </div>
           </form>
 
-          {/* Feature strip */}
+
           <div className="mx-auto mt-2 flex max-w-md flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:mt-3">
             {FEATURES.map((feature, i) => (
               <span

@@ -1,14 +1,5 @@
 import { motion } from "framer-motion";
 
-/**
- * Large circular impact score with level label and summary line.
- *
- * @param {object} data
- * @param {number} data.score
- * @param {number} [data.maxScore=100]
- * @param {string} data.level
- * @param {string} data.summary
- */
 export default function ImpactScore({ data }) {
   const { score, maxScore = 100, level, summary } = data;
 
@@ -20,7 +11,7 @@ export default function ImpactScore({ data }) {
   return (
     <div className="glass hover-lift rounded-3xl p-6 sm:p-7">
       <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center">
-        {/* Ring */}
+
         <div className="relative shrink-0">
           <svg width="140" height="140" viewBox="0 0 140 140" className="-rotate-90">
             <circle
@@ -61,7 +52,7 @@ export default function ImpactScore({ data }) {
           </div>
         </div>
 
-        {/* Copy */}
+
         <div className="text-center sm:text-left">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#96B6DD]">
             Impact score

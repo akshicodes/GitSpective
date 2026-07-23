@@ -1,8 +1,4 @@
 
-    # Calculate an overall GitHub Impact Score (0–100) based on
-    # repository quality, activity, community engagement,
-    # technology diversity, and portfolio size.
-
 
 
 
@@ -13,7 +9,7 @@ def calculate_impact_score(
     repository_health,
     repository_activity,
 ):
-   
+
 
     score = 0
     breakdown = {}
@@ -28,8 +24,6 @@ def calculate_impact_score(
     followers = profile.get("followers", 0)
     total_repositories = profile.get("public_repos", 0)
 
-    # Repository Health (35)
-    
 
     average_health = (
         sum(repo.get("health_score", 0) for repo in repository_health)
@@ -43,9 +37,6 @@ def calculate_impact_score(
     score += health_score
     breakdown["repository_health"] = health_score
 
-   
-    # Repository Activity (25)
-    
 
     activity_level = repository_activity.get("activity_level", "Inactive")
 
@@ -67,12 +58,7 @@ def calculate_impact_score(
     score += activity_score
     breakdown["activity"] = activity_score
 
-   
-    # Community Engagement (20)
-    
     community_score = 0
-
-    # Stars (8)
 
     if total_stars >= 100:
         community_score += 8
@@ -85,8 +71,6 @@ def calculate_impact_score(
 
     elif total_stars >= 5:
         community_score += 2
-
-    # Forks (5)
 
     if total_forks >= 50:
         community_score += 5
@@ -102,8 +86,6 @@ def calculate_impact_score(
 
     elif total_forks >= 1:
         community_score += 1
-
-    # Followers (7)
 
     if followers >= 100:
         community_score += 7
@@ -123,9 +105,6 @@ def calculate_impact_score(
     score += community_score
     breakdown["community"] = community_score
 
-    
-    # Technology Diversity (10)
-   
 
     language_count = len(language_analysis)
 
@@ -149,8 +128,7 @@ def calculate_impact_score(
 
     score += technology_score
     breakdown["technology_diversity"] = technology_score
-    # Repository Portfolio (10)
-    
+
 
     if total_repositories >= 20:
         portfolio_score = 10
@@ -173,9 +151,6 @@ def calculate_impact_score(
     score += portfolio_score
     breakdown["repository_portfolio"] = portfolio_score
 
-    
-    # Impact Level
-    
 
     if score >= 90:
         impact_level = "Exceptional"
@@ -191,9 +166,6 @@ def calculate_impact_score(
 
     else:
         impact_level = "Beginner"
-
-
-    # Summary
 
 
     if score >= 75:

@@ -1,7 +1,7 @@
 function ActivitySummary({ activity }) {
   return (
     <div className="space-y-6">
-      {/* Status */}
+
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-secondary">Activity Level</p>
@@ -18,7 +18,7 @@ function ActivitySummary({ activity }) {
         </div>
       </div>
 
-      {/* Statistics */}
+
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-xl border border-white/10 p-4">
           <p className="text-sm text-secondary">Total Repositories</p>
@@ -49,7 +49,7 @@ function ActivitySummary({ activity }) {
         </div>
       </div>
 
-      {/* AI Summary */}
+
       <div className="rounded-xl border border-white/10 bg-white/5 p-4">
         <p className="text-sm font-medium text-primary">Summary</p>
         <p className="mt-2 text-sm leading-relaxed text-secondary">

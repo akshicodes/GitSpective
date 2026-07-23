@@ -1,11 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
 
-/**
- * Single developer insight, rendered inside the insights grid.
- *
- * @param {object} insight
- * @param {string} insight.text
- */
 export default function InsightCard({ insight }) {
   return (
     <div className="hover-lift flex items-start gap-2.5 rounded-2xl border border-white/10 bg-white/[0.04] p-4">

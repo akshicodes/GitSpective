@@ -14,8 +14,6 @@ def generate_developer_insights(
     followers = profile.get("followers", 0)
     activity_level = repository_activity.get("activity_level", "Inactive")
 
-    # Strengths
-
     if total_stars >= 100:
         strengths.append("Strong Open Source Presence")
 
@@ -40,8 +38,6 @@ def generate_developer_insights(
     if total_repositories > 0 and described >= total_repositories * 0.7:
         strengths.append("Well Documented Repositories")
 
-    # Improvements
-
     if followers < 50:
         improvements.append("Increase community engagement")
 
@@ -53,8 +49,6 @@ def generate_developer_insights(
 
     if activity_level in ["Occasionally Active", "Inactive"]:
         improvements.append("Maintain repositories more consistently")
-
-    # Developer type
 
     if total_stars >= 10000:
         developer_type = "Open Source Legend"
@@ -68,8 +62,6 @@ def generate_developer_insights(
     else:
         developer_type = "Emerging Developer"
 
-    # Main insights
-
     primary_insight = (
         strengths[0]
         if strengths
@@ -77,8 +69,6 @@ def generate_developer_insights(
     )
 
     secondary_insights = strengths[1:4]
-
-    # Summary
 
     if strengths:
         summary = (

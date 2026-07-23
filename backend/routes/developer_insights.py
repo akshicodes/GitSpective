@@ -37,7 +37,7 @@ def developer_insights(username: str):
         statistics,
         activity
     )
-    
+
     return {
         "status": "success",
         "message": "Developer insights generated successfully.",

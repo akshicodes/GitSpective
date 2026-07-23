@@ -29,10 +29,6 @@ import { useAnalytics } from "../context/AnalyticsContext";
 import Navbar from "../components/Navbar/Navbar";
 import SectionTitle from "../components/SectionTitle/SectionTitle";
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   show: { opacity: 1, y: 0 },
@@ -74,10 +70,6 @@ const BREAKDOWN_COLORS = {
   community: "#EA4C89",
   quality: "#6ee7b7",
 };
-
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
 
 function StatPill({ icon: Icon, value, label }) {
   return (
@@ -150,8 +142,6 @@ function QuickFact({ icon: Icon, label, value, isLink }) {
     </div>
   );
 }
-
-// Custom Recharts tooltip
 function GrowthTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
@@ -163,10 +153,6 @@ function GrowthTooltip({ active, payload, label }) {
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Error / Loading states
-// ---------------------------------------------------------------------------
 
 function ErrorState({ title, message, onBack }) {
   return (
@@ -190,10 +176,6 @@ function ErrorState({ title, message, onBack }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Repository page
-// ---------------------------------------------------------------------------
-
 export default function Repository() {
   const { username, repoName } = useParams();
   const navigate = useNavigate();
@@ -204,8 +186,6 @@ export default function Repository() {
     ? `/repositories/${username}`
     : `/dashboard/${username}`;
   const backLabel = backToRepositories ? "Back to repositories" : "Back to dashboard";
-
-  // ---- Guard: context not populated (direct URL access without Landing flow) ----
   if (!analytics) {
     return (
       <div className="min-h-screen bg-bg">
@@ -220,8 +200,6 @@ export default function Repository() {
       </div>
     );
   }
-
-  // ---- Find the repo in context ----
   const repoData = analytics.repositories?.find((r) => r.name === repoName);
   const healthData = analytics.repository_health?.find(
     (r) => r.repository === repoName
@@ -241,8 +219,6 @@ export default function Repository() {
       </div>
     );
   }
-
-  // ---- Derived display values ----
   const langColor = LANGUAGE_COLORS[repoData.language] ?? LANGUAGE_COLORS.default;
   const healthClass =
     HEALTH_STYLES[healthData?.health_status] ?? HEALTH_STYLES.default;
@@ -255,9 +231,6 @@ export default function Repository() {
         day: "numeric",
       })
     : "—";
-
-  // Repository growth: overall user growth filtered is not per-repo;
-  // we show the user's overall yearly repo creation chart with this repo's year highlighted.
   const growthData = analytics.repository_growth
     ? Object.entries(analytics.repository_growth).map(([year, count]) => ({
         year,
@@ -275,7 +248,7 @@ export default function Repository() {
 
       <main className="mx-auto max-w-7xl px-5 py-8 sm:px-8 sm:py-10">
 
-        {/* Back button */}
+
         <motion.button
           type="button"
           onClick={() => navigate(backPath)}
@@ -289,7 +262,7 @@ export default function Repository() {
           {backLabel}
         </motion.button>
 
-        {/* ---- Hero header ---- */}
+
         <motion.section
           variants={fadeUp}
           initial="hidden"
@@ -315,7 +288,7 @@ export default function Repository() {
                 {repoData.description || "No description provided."}
               </p>
 
-              {/* Language + topics */}
+
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 {repoData.language && (
                   <span className="flex items-center gap-1.5 text-[13px] text-secondary">
@@ -333,7 +306,7 @@ export default function Repository() {
               </div>
             </div>
 
-            {/* Health score ring */}
+
             {healthData && (
               <div className="shrink-0 text-center">
                 <div className="relative inline-flex">
@@ -396,7 +369,7 @@ export default function Repository() {
             )}
           </div>
 
-          {/* Stats row */}
+
           <div className="mt-6 flex flex-wrap gap-3">
             <StatPill icon={Star} value={repoData.stars} label="stars" />
             <StatPill icon={GitFork} value={repoData.forks} label="forks" />
@@ -405,12 +378,12 @@ export default function Repository() {
           </div>
         </motion.section>
 
-        {/* ---- Main two-column grid ---- */}
+
         <div className="mt-7 grid grid-cols-1 gap-7 lg:grid-cols-12">
-          {/* Left column */}
+
           <div className="flex flex-col gap-7 lg:col-span-8">
 
-            {/* Health Breakdown */}
+
             {healthData && (
               <motion.section
                 variants={fadeUp}
@@ -438,7 +411,7 @@ export default function Repository() {
               </motion.section>
             )}
 
-            {/* Strengths & Suggestions */}
+
             {(strengths.length > 0 || suggestions.length > 0) && (
               <motion.section
                 variants={fadeUp}
@@ -452,7 +425,7 @@ export default function Repository() {
                   subtitle="What's working well and where to improve."
                 />
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  {/* Strengths */}
+
                   {strengths.length > 0 && (
                     <div className="glass rounded-2xl p-5">
                       <p className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
@@ -473,7 +446,7 @@ export default function Repository() {
                     </div>
                   )}
 
-                  {/* Suggestions */}
+
                   {suggestions.length > 0 && (
                     <div className="glass rounded-2xl p-5">
                       <p className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[#EA4C89]">
@@ -497,7 +470,7 @@ export default function Repository() {
               </motion.section>
             )}
 
-            {/* Repository Growth Chart */}
+
             {growthData.length > 0 && (
               <motion.section
                 variants={fadeUp}
@@ -554,7 +527,7 @@ export default function Repository() {
             )}
           </div>
 
-          {/* Right column — Quick Facts */}
+
           <div className="lg:col-span-4">
             <motion.div
               variants={fadeUp}
@@ -607,7 +580,7 @@ export default function Repository() {
                   />
                 </div>
 
-                {/* GitHub link */}
+
                 <a
                   href={`https://github.com/${username}/${repoData.name}`}
                   target="_blank"
@@ -622,7 +595,7 @@ export default function Repository() {
           </div>
         </div>
 
-        {/* Footer */}
+
         <footer className="mt-14 flex flex-col items-center gap-1 border-t border-white/10 pt-6 text-center text-[12.5px] text-muted sm:flex-row sm:justify-between">
           <span>GitSpective — GitHub, explained beautifully.</span>
         </footer>

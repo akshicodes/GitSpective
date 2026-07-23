@@ -31,19 +31,6 @@ function getMostUpdatedMonth(repositories) {
   return [...months.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "No activity";
 }
 
-/**
- * Dashboard page — UI only, static placeholder data.
- *
- * The `username` route param is read purely for display (Navbar label +
- * ProfileCard identity) so the page reflects whoever was just searched for
- * on the landing page. Every other value here is placeholder data from
- * `src/data/placeholderData.js`; when the backend is wired in later, that
- * import gets swapped for the response of `GET /analytics/{username}` and
- * the component props stay the same shape.
- */
-
-
-
 export default function Dashboard() {
   const navigate = useNavigate();
   const { analytics } = useAnalytics();
@@ -57,8 +44,8 @@ export default function Dashboard() {
   }
   const profile = {
   name: analytics.profile.name,
-  username: analytics.profile.username,   
-  avatar: analytics.profile.avatar,       
+  username: analytics.profile.username,
+  avatar: analytics.profile.avatar,
   bio: analytics.profile.bio,
   followers: analytics.profile.followers,
   following: analytics.profile.following,
@@ -151,7 +138,7 @@ const githubMetrics = [
           Back to home
         </button>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-7">
-          {/* Left column — profile */}
+
           <motion.div
             variants={fadeUp}
             initial="hidden"
@@ -164,9 +151,9 @@ const githubMetrics = [
             </div>
           </motion.div>
 
-          {/* Right column — everything else */}
+
           <div className="flex flex-col gap-7 lg:col-span-8">
-            {/* Quick stats */}
+
             <motion.section
               variants={fadeUp}
               initial="hidden"
@@ -180,7 +167,7 @@ const githubMetrics = [
               </div>
             </motion.section>
 
-            {/* Impact score */}
+
             <motion.section
               variants={fadeUp}
               initial="hidden"
@@ -190,7 +177,7 @@ const githubMetrics = [
               <ImpactScore data={impactData} />
             </motion.section>
 
-            {/* Developer insights */}
+
             <motion.section
               variants={fadeUp}
               initial="hidden"
@@ -204,7 +191,7 @@ const githubMetrics = [
               />
               <div className="space-y-6">
 
-  {/* Developer Type */}
+
   <div className="glass rounded-2xl p-5">
     <p className="text-xs uppercase tracking-wider text-[#96B6DD]">
       Developer Type
@@ -219,7 +206,7 @@ const githubMetrics = [
     </p>
   </div>
 
-  {/* Insights */}
+
   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
     {insights.map((insight) => (
       <InsightCard key={insight.id} insight={insight} />
@@ -263,10 +250,10 @@ const githubMetrics = [
           </div>
         </motion.section>
 
-        {/* Footer */}
+
         <footer className="mt-14 flex flex-col items-center gap-1 border-t border-white/10 pt-6 text-center text-[12.5px] text-muted sm:flex-row sm:justify-between">
           <span>GitSpective — GitHub, explained beautifully.</span>
-          
+
         </footer>
       </main>
     </div>

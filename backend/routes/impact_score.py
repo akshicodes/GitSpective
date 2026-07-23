@@ -21,7 +21,7 @@ def impact_score(username: str):
 
     repository_health = calculate_repository_health(repositories)
 
-    repository_activity = calculate_repository_activity(repositories)   
+    repository_activity = calculate_repository_activity(repositories)
 
     if profile is None or repositories is None:
         return {
