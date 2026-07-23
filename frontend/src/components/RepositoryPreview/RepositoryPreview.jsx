@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Star, GitFork } from "lucide-react";
 
 const LANGUAGE_COLORS = {
@@ -12,28 +13,34 @@ const HEALTH_STYLES = {
   "Very Good": "text-[#96B6DD] bg-[#96B6DD]/10 border-[#96B6DD]/25",
   Good: "text-amber-300 bg-amber-400/10 border-amber-400/25",
   Developing: "text-orange-300 bg-orange-400/10 border-orange-400/25",
+  "Getting Started": "text-secondary bg-white/5 border-white/15",
   default: "text-secondary bg-white/5 border-white/15",
 };
 
 /**
- * Repository highlight card.
+ * Repository highlight card. Clicking navigates to the Repository detail page.
  *
- * @param {object} repo
- * @param {string} repo.name
- * @param {string} repo.description
- * @param {string} repo.language
- * @param {number} repo.stars
- * @param {number} repo.forks
- * @param {string} repo.health - Health status label (e.g. "Excellent", "Good").
+ * @param {object}  repo
+ * @param {string}  repo.name
+ * @param {string}  repo.description
+ * @param {string}  repo.language
+ * @param {number}  repo.stars
+ * @param {number}  repo.forks
+ * @param {string}  repo.health - Health status label (e.g. "Excellent", "Good").
+ * @param {string}  username    - GitHub username, used to build the detail route.
  */
-export default function RepositoryPreview({ repo }) {
+export default function RepositoryPreview({ repo, username }) {
   const dot = LANGUAGE_COLORS[repo.language] ?? LANGUAGE_COLORS.default;
   const healthClass = HEALTH_STYLES[repo.health] ?? HEALTH_STYLES.default;
 
   return (
-    <div className="hover-lift flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+    <Link
+      to={`/repository/${username}/${repo.name}`}
+      className="hover-lift flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-5 no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9D4EF4]"
+      aria-label={`View details for ${repo.name}`}
+    >
       <div className="flex items-start justify-between gap-3">
-        <h4 className="font-display text-[15px] font-semibold text-primary">
+        <h4 className="min-w-0 flex-1 font-display text-[15px] font-semibold text-primary break-words">
           {repo.name}
         </h4>
         <span
@@ -65,6 +72,6 @@ export default function RepositoryPreview({ repo }) {
           {repo.forks}
         </span>
       </div>
-    </div>
+    </Link>
   );
 }

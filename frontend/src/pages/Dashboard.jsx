@@ -7,18 +7,11 @@ import ProfileCard from "../components/ProfileCard/ProfileCard";
 import StatsCard from "../components/StatsCard/StatsCard";
 import ImpactScore from "../components/ImpactScore/ImpactScore";
 import InsightCard from "../components/InsightCard/InsightCard";
-import RecentActivity from "../components/RecentActivity/RecentActivity";
 import RepositoryPreview from "../components/RepositoryPreview/RepositoryPreview";
 import SectionTitle from "../components/SectionTitle/SectionTitle";
+import ActivitySummary from "../components/dashboard/ActivitySummary";
 
-import {
-  placeholderProfile,
-  placeholderStats,
-  placeholderImpactScore,
-  placeholderInsights,
-  placeholderActivity,
-  placeholderRepositories,
-} from "../data/placeholderData";
+
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -49,10 +42,9 @@ export default function Dashboard() {
     </div>
   );
   }
+console.log("Repository Activity:", analytics.repository_activity);
 
-// console.log(", analytics);
-console.table(analytics.profile);
-console.log("Dashboard Analytics:",analytics.repository_statistics);
+const activity = analytics.repository_activity;
 
   const profile = {
   name: analytics.profile.name,
@@ -91,6 +83,50 @@ console.log("Dashboard Analytics:",analytics.repository_statistics);
   },
 ];
 
+const insights = [
+  {
+    id: 1,
+    text: analytics.developer_insights.primary_insight,
+  },
+
+  ...analytics.developer_insights.secondary_insights.map((item, index) => ({
+    id: index + 2,
+    text: item,
+  })),
+
+  ...analytics.developer_insights.improvements.map((item, index) => ({
+    id:
+      analytics.developer_insights.secondary_insights.length +
+      index +
+      2,
+    text: item,
+  })),
+];
+
+const repositoryHealthMap = Object.fromEntries(
+  analytics.repository_health.map((repo) => [
+    repo.repository,
+    repo,
+  ])
+);
+const repositories = analytics.repositories.map((repo) => {
+  const health = repositoryHealthMap[repo.name];
+
+  return {
+    id: repo.id,
+    name: repo.name,
+    description: repo.description || "No description available.",
+    language: repo.language || "Unknown",
+    stars: repo.stars,
+    forks: repo.forks,
+
+    health: health?.health_status || "Unknown",
+    healthScore: health?.health_score || 0,
+  };
+});
+
+console.log("Repository Activity:", analytics.repository_activity);
+console.log("Repository Health:", analytics.repository_health);
 
 const impactData = {
   score: analytics.impact_score.impact_score,
@@ -98,6 +134,14 @@ const impactData = {
   level: analytics.impact_score.impact_level,
   summary: analytics.impact_score.summary,
 };
+
+
+const languageChartData = Object.entries(analytics.language_analysis).map(
+  ([language, count]) => ({
+    name: language,
+    value: count,
+  })
+);
 
   return (
     <div className="min-h-screen bg-bg">
@@ -156,25 +200,50 @@ const impactData = {
                 title="Developer insights"
                 subtitle="What the data says about how this developer works."
               />
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {placeholderInsights.map((insight) => (
-                  <InsightCard key={insight.id} insight={insight} />
-                ))}
-              </div>
+              <div className="space-y-6">
+
+  {/* Developer Type */}
+  <div className="glass rounded-2xl p-5">
+    <p className="text-xs uppercase tracking-wider text-[#96B6DD]">
+      Developer Type
+    </p>
+
+    <h3 className="mt-2 font-display text-xl font-semibold text-primary">
+      {analytics.developer_insights.developer_type}
+    </h3>
+
+    <p className="mt-3 text-sm leading-relaxed text-secondary">
+      {analytics.developer_insights.summary}
+    </p>
+  </div>
+
+  {/* Insights */}
+  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    {insights.map((insight) => (
+      <InsightCard key={insight.id} insight={insight} />
+    ))}
+  </div>
+
+</div>
             </motion.section>
 
             {/* Recent activity */}
-            <motion.section
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5 }}
-              className="glass hover-lift rounded-3xl p-6 sm:p-7"
-            >
-              <SectionTitle title="Recent activity" />
-              <RecentActivity items={placeholderActivity} />
-            </motion.section>
+            {/* Repository Activity */}
+<motion.section
+  variants={fadeUp}
+  initial="hidden"
+  whileInView="show"
+  viewport={{ once: true, margin: "-60px" }}
+  transition={{ duration: 0.5 }}
+  className="glass hover-lift rounded-3xl p-6 sm:p-7"
+>
+  <SectionTitle
+    title="Repository Activity"
+    subtitle="Overall maintenance and activity summary."
+  />
+
+  <ActivitySummary activity={analytics.repository_activity} />
+</motion.section>
 
             {/* Repository highlights */}
             <motion.section
@@ -189,9 +258,9 @@ const impactData = {
                 subtitle="A few projects worth a closer look."
               />
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {placeholderRepositories.map((repo) => (
-                  <RepositoryPreview key={repo.id} repo={repo} />
-                ))}
+                {repositories.map((repo) => (
+  <RepositoryPreview key={repo.id} repo={repo} username={profile.username} />
+))}
               </div>
             </motion.section>
           </div>
@@ -200,7 +269,7 @@ const impactData = {
         {/* Footer */}
         <footer className="mt-14 flex flex-col items-center gap-1 border-t border-white/10 pt-6 text-center text-[12.5px] text-muted sm:flex-row sm:justify-between">
           <span>GitSpective — GitHub, explained beautifully.</span>
-          <span>Data shown is illustrative placeholder content.</span>
+          
         </footer>
       </main>
     </div>

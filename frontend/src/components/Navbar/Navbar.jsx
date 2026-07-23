@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LayoutDashboard, FolderGit2, BarChart3, Menu, X } from "lucide-react";
 import GitHubMark from "../GitHubMark";
 
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
  */
 export default function Navbar({ username }) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-bg/80 backdrop-blur-xl">
@@ -48,6 +50,11 @@ export default function Navbar({ username }) {
               key={label}
               type="button"
               aria-current={active ? "page" : undefined}
+              onClick={() => {
+                if (label === "Dashboard" && username) {
+                  navigate(`/dashboard/${username}`);
+                }
+              }}
               className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
                 active
                   ? "bg-white/10 text-primary"
@@ -85,6 +92,12 @@ export default function Navbar({ username }) {
                 key={label}
                 type="button"
                 aria-current={active ? "page" : undefined}
+                onClick={() => {
+                  if (label === "Dashboard" && username) {
+                    navigate(`/dashboard/${username}`);
+                    setOpen(false);
+                  }
+                }}
                 className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${
                   active
                     ? "bg-white/10 text-primary"
