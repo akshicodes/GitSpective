@@ -15,12 +15,12 @@
 
 </div>
 
-<div align="center">
-  <video controls width="100%" preload="metadata">
-    <source src="https://raw.githubusercontent.com/akshicodes/Github_Dashboard_Analysis/master/docs/gitspective%20demo%20video.mp4" type="video/mp4">
-    <a href="https://github.com/akshicodes/Github_Dashboard_Analysis/blob/master/docs/gitspective%20demo%20video.mp4">Watch the GitSpective demo video</a>
-  </video>
-</div>
+## 🎥 Demo
+
+▶ **Watch the demo video**
+
+
+https://github.com/akshicodes/GitSpective/releases/download/demo-v1/gitspective.demo.video.1.mp4
 
 ---
 
